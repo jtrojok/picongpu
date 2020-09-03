@@ -44,6 +44,8 @@ namespace ionization
      */
     struct AlgorithmBSI
     {
+        float_X ionizationEnergy = 0;
+        uint32_t newMacroElectrons = 0;
 
         /** Functor implementation
          *
@@ -71,22 +73,20 @@ namespace ionization
             {
                 uint32_t const cs = pmacc::math::float2int_rd(chargeState);
                 /* ionization potential in atomic units */
-                float_X const iEnergy = typename GetIonizationEnergies<ParticleType>::type{ }[cs];
+                ionizationEnergy = typename GetIonizationEnergies<ParticleType>::type{ }[cs];
                 /* the charge that attracts the electron that is to be ionized:
                  * equals `protonNumber - no. allInnerElectrons`
                  */
                 float_X const effectiveCharge = chargeState + float_X(1.0);
                 /* critical field strength in atomic units */
-                float_X const critField = iEnergy*iEnergy / (float_X(4.0) * effectiveCharge);
+                float_X const critField = ionizationEnergy*ionizationEnergy / (float_X(4.0) * effectiveCharge);
                 /* ionization condition */
                 if (math::abs(eField) / ATOMIC_UNIT_EFIELD >= critField)
                 {
-                    /* return number of macro electrons to produce */
-                    return 1u;
+                    /* set number of macro electrons to produce */
+                    newMacroElectrons = 1;
                 }
             }
-            /* no ionization */
-            return 0u;
         }
     };
 

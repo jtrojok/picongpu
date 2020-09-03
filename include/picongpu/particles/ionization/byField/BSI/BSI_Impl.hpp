@@ -98,6 +98,7 @@ namespace ionization
             using ValueType_E = FieldE::ValueType;
             /* global memory EM-field device databoxes */
             FieldE::DataBoxType eBox;
+            FieldJ::DataBoxType jBox;
             /* shared memory EM-field device databoxes */
             PMACC_ALIGN(cachedE, DataBox<SharedBox<ValueType_E, typename BlockArea::FullSuperCellSize,1> >);
 
@@ -108,8 +109,10 @@ namespace ionization
                 DataConnector &dc = Environment<>::get().DataConnector();
                 /* initialize pointers on host-side E-(B-)field databoxes */
                 auto fieldE = dc.get< FieldE >( FieldE::getName(), true );
+                auto fieldJ = dc.get< FieldJ >( FieldJ::getName(), true );
                 /* initialize device-side E-(B-)field databoxes */
                 eBox = fieldE->getDeviceDataBox();
+                jBox = FieldJ->getDeviceDataBox();
 
             }
 
@@ -134,6 +137,8 @@ namespace ionization
                 const T_WorkerCfg & workerCfg
             )
             {
+                /* shift origin jbox to cell of particle */
+                jbox = jBox.shift(blockCell);
 
                 /* caching of E field */
                 cachedE = CachedBox::create<
@@ -214,12 +219,17 @@ namespace ionization
                 float_X prevBoundElectrons = particle[boundElectrons_];
 
                 /* this is the point where actual ionization takes place */
-                IonizationAlgorithm ionizeAlgo;
+                IonizationAlgorithm ionizeAlgo{ }(eField, particle);
                 /* determine number of new macro electrons to be created */
-                uint32_t newMacroElectrons = ionizeAlgo(
-                                                eField,
-                                                particle
-                                              );
+                uint32_t newMacroElectrons = ionizeAlgo.newMacroElectrons;
+                float3_X ionizationEnergy = ionizeAlgo.ionizationEnergy / ATOMIC_UNIT_ENERGY * UNIT_ENERGY; // Umrechnen in PIConGPU
+
+                auto jBoxPar = jBox.shift(localCell);
+                float3_X jIonizationPar = ionizationEnergy * eField / math::abs(eField) / math::abs(eField) / DELTA_T;
+
+                //cupla::atomicAdd(&jBoxPar(acc, DataSpace< DIM3 >(0,0,0)), float3_X::create(1.0));
+
+
 
                 return newMacroElectrons;
 
