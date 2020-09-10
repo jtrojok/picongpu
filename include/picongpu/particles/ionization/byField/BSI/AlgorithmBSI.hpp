@@ -61,7 +61,7 @@ namespace ionization
          * (current implementation supports only 0 or 1 per execution)
          */
         template<typename EType, typename ParticleType >
-        HDINLINE uint32_t
+        HDINLINE void
         operator()( const EType eField, ParticleType& parentIon )
         {
 

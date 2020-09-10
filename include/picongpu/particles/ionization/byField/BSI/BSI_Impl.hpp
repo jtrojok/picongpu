@@ -112,7 +112,7 @@ namespace ionization
                 auto fieldJ = dc.get< FieldJ >( FieldJ::getName(), true );
                 /* initialize device-side E-(B-)field databoxes */
                 eBox = fieldE->getDeviceDataBox();
-                jBox = FieldJ->getDeviceDataBox();
+                jBox = fieldJ->getDeviceDataBox();
 
             }
 
@@ -138,7 +138,7 @@ namespace ionization
             )
             {
                 /* shift origin jbox to cell of particle */
-                jbox = jBox.shift(blockCell);
+                jBox = jBox.shift(blockCell);
 
                 /* caching of E field */
                 cachedE = CachedBox::create<
@@ -219,15 +219,54 @@ namespace ionization
                 float_X prevBoundElectrons = particle[boundElectrons_];
 
                 /* this is the point where actual ionization takes place */
-                IonizationAlgorithm ionizeAlgo{ }(eField, particle);
-                /* determine number of new macro electrons to be created */
-                uint32_t newMacroElectrons = ionizeAlgo.newMacroElectrons;
-                float3_X ionizationEnergy = ionizeAlgo.ionizationEnergy / ATOMIC_UNIT_ENERGY * UNIT_ENERGY; // Umrechnen in PIConGPU
-
+                IonizationAlgorithm ionizeAlgo{};
+                ionizeAlgo(eField, particle);
+                /* determine number of new macro electrons to be created and ionization energy */
+                float_X const weighting = particle[ weighting_ ];
+                auto newMacroElectrons = ionizeAlgo.newMacroElectrons;
+                auto ionizationEnergy = weighting * ionizeAlgo.ionizationEnergy * ::picongpu::SI::ATOMIC_UNIT_ENERGY / ::picongpu::UNIT_ENERGY; // Umrechnen in PIConGPU
+                /* calculate ionization current at particle position */
                 auto jBoxPar = jBox.shift(localCell);
                 float3_X jIonizationPar = ionizationEnergy * eField / math::abs(eField) / math::abs(eField) / DELTA_T;
-
-                //cupla::atomicAdd(&jBoxPar(acc, DataSpace< DIM3 >(0,0,0)), float3_X::create(1.0));
+                /* assign ionization current to grid points */
+                using Shape = typename ::picongpu::traits::GetShape<T_DestSpecies>::type;
+                using AssignmentFunction = typename Shape::ChargeAssignmentOnSupport;
+                static constexpr int supp = AssignmentFunction::support;
+                /*(supp + 1) % 2 is 1 for even supports else 0*/
+                static constexpr int begin = -supp / 2 + (supp + 1) % 2;
+                static constexpr int end = begin+supp-1;
+                /* actual assignment */
+                for( int z = begin; z <= end; ++z)
+                {
+                    float3_X jGridz = jIonizationPar;
+                    jGridz *= AssignmentFunction()( float_X(z) - pos.z());
+                    for( int y = begin; y <= end; ++y)
+                    {
+                        float3_X jGridy = jGridz;
+                        jGridy *= AssignmentFunction()( float_X(y) - pos.y());
+                        for( int x = begin; x <= end; ++x)
+                        {
+                            float3_X jGridx = jGridy; 
+                            jGridx *= AssignmentFunction()( float_X(x) - pos.x());
+                            cupla::atomicAdd(
+                                acc, 
+                                &(jBoxPar(DataSpace< DIM3 >(x,y,z)).x()), 
+                                jGridx.x()
+                            );
+                            cupla::atomicAdd(
+                                acc, 
+                                &(jBoxPar(DataSpace< DIM3 >(x,y,z)).y()), 
+                                jGridx.y()
+                            );
+                            cupla::atomicAdd(
+                                acc, 
+                                &(jBoxPar(DataSpace< DIM3 >(x,y,z)).z()), 
+                                jGridx.z()
+                            );
+                            //cupla::atomicAdd(acc, &jBoxPar(DataSpace< DIM3 >(0,0,0)), float3_X::create(1.));
+                        }
+                    }
+                }
 
 
 
