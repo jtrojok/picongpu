@@ -1,0 +1,568 @@
+Usage picongpu [-d dx=1 dy=1 dz=1] -g width height depth [options]
+:
+  -h [ --help ]                         print help message and exit
+  --validate                            validate command line parameters and 
+                                        exit
+  -v [ --version ]                      print version information and exit
+  -c [ --config ] arg                   Config file(s)
+
+PIConGPU:
+  -s [ --steps ] arg                    Simulation steps
+  --checkpoint.restart.loop arg (=0)    Number of times to restart the 
+                                        simulation after simulation has 
+                                        finished (for presentations). Note: 
+                                        does not yet work with all plugins, see
+                                        issue #1305
+  -p [ --percent ] arg (=5)             Print time statistics after p percent 
+                                        to stdout
+  --checkpoint.restart                  Restart simulation
+  --checkpoint.restart.directory arg (=checkpoints)
+                                        Directory containing checkpoints for a 
+                                        restart
+  --checkpoint.restart.step arg         Checkpoint step to restart from
+  --checkpoint.period arg               Period for checkpoint creation
+  --checkpoint.directory arg (=checkpoints)
+                                        Directory for checkpoints
+  --author arg                          The author that runs the simulation and
+                                        is responsible for created output files
+  --mpiDirect                           use device direct for MPI communication
+                                        e.g. GPU direct
+  --versionOnce                         print version information once and 
+                                        start
+  -d [ --devices ] arg                  number of devices in each dimension
+  -g [ --grid ] arg                     size of the simulation grid
+  --gridDist arg                        Regex to describe the static 
+                                        distribution of the cells for each 
+                                        device,default: equal distribution over
+                                        all devices
+                                          example:
+                                            -d 2 4 1
+                                            -g 128 192 12
+                                            --gridDist "64{2}" "64,32{2},64"
+                                        
+  --periodic arg                        specifying whether the grid is periodic
+                                        (1) or not (0) in each dimension, 
+                                        default: no periodic dimensions
+  -m [ --moving ]                       enable sliding/moving window
+  --windowMovePoint arg (=0.90000000000000002)
+                                        ratio of the global window size in y 
+                                        which defines when to start sliding the
+                                        window. The window starts sliding at 
+                                        the time required to pass the distance 
+                                        of windowMovePoint * (global window 
+                                        size in y) when moving with the speed 
+                                        of light
+  --stopWindow arg (=-1)                stops the window at stimulation step, 
+                                        -1 means that window is never stopping
+  --autoAdjustGrid arg (=1)             auto adjust the grid size if PIConGPU 
+                                        conditions are not fulfilled
+
+Initializers:
+
+PluginController:
+
+Checkpoint:
+  --checkpoint.backend arg              Optional backend for checkpointing 
+                                        [adios, hdf5, openPMD] default: adios
+  --checkpoint.file arg                 Optional checkpoint filename (prefix)
+  --checkpoint.restart.backend arg      Optional backend for restarting [adios,
+                                        hdf5, openPMD] default: adios
+  --checkpoint.restart.file arg         checkpoint restart filename (prefix)
+  --checkpoint.restart.chunkSize arg (=1000000)
+                                        Number of particles processed in one 
+                                        kernel call during restart to prevent 
+                                        frame count blowup
+  --checkpoint.adios.aggregators arg    Number of aggregators [0 == number of 
+                                        MPI processes] | default: 0
+  --checkpoint.adios.ost arg            Number of OST | default: 1
+  --checkpoint.adios.disable-meta arg   Disable online gather and write of a 
+                                        global meta file, can be time consuming
+                                        (use `bpmeta` post-mortem) | default: 0
+  --checkpoint.adios.transport-params arg
+                                        additional transport parameters, see 
+                                        ADIOS manual chapter 6.1.5, e.g., 
+                                        'random_offset=1;stripe_count=4' | 
+                                        default: 
+  --checkpoint.adios.compression arg    ADIOS compression method, e.g., zlib 
+                                        (see `adios_config -m` for help) | 
+                                        default: none
+  --checkpoint.openPMD.compression arg  Backend-specific openPMD compression 
+                                        method, e.g., zlib (see `adios_config 
+                                        -m` for help). Legacy parameter until 
+                                        compression can be fully configured via
+                                        JSON in the openPMD API. | default: 
+                                        none
+  --checkpoint.openPMD.file arg         openPMD file basename
+  --checkpoint.openPMD.ext arg          openPMD filename extension (this 
+                                        controls thebackend picked by the 
+                                        openPMD API) | default: bp
+  --checkpoint.openPMD.infix arg        openPMD filename infix (use to pick 
+                                        file- or group-based layout in openPMD)
+                                        set to NULL to keep empty (e.g. to pick
+                                        group-based iteration layout) | 
+                                        default: _%06T
+  --checkpoint.openPMD.json arg         advanced (backend) configuration for 
+                                        openPMD in JSON format | default: {}
+  --checkpoint.openPMD.dataPreparationStrategy arg
+                                        Strategy for preparation of particle 
+                                        data ('doubleBuffer' or 
+                                        'mappedMemory'). Aliases 'adios' and 
+                                        'hdf5' may be used respectively. | 
+                                        default: doubleBuffer
+
+EnergyFields: calculate the energy of the fields:
+  --fields_energy.period arg            enable plugin [for each n-th step]
+
+ADIOSWriter: dump simulation data with ADIOS:
+  --adios.period arg                    enable ADIOS IO [for each n-th step]
+  --adios.source arg                    data sources: [species_all, fields_all,
+                                        probe_all, E, B, J, e_density, 
+                                        H_density, C_density, N_density, 
+                                        H_boundElectronDensity, 
+                                        C_boundElectronDensity, 
+                                        N_boundElectronDensity, 
+                                        e_chargeDensity, H_chargeDensity, 
+                                        C_chargeDensity, N_chargeDensity, 
+                                        e_energyDensity, H_energyDensity, 
+                                        C_energyDensity, N_energyDensity] | 
+                                        default: species_all, fields_all
+  --adios.file arg                      ADIOS output filename (prefix)
+  --adios.aggregators arg               Number of aggregators [0 == number of 
+                                        MPI processes] | default: 0
+  --adios.ost arg                       Number of OST | default: 1
+  --adios.disable-meta arg              Disable online gather and write of a 
+                                        global meta file, can be time consuming
+                                        (use `bpmeta` post-mortem) | default: 0
+  --adios.transport-params arg          additional transport parameters, see 
+                                        ADIOS manual chapter 6.1.5, e.g., 
+                                        'random_offset=1;stripe_count=4' | 
+                                        default: 
+  --adios.compression arg               ADIOS compression method, e.g., zlib 
+                                        (see `adios_config -m` for help) | 
+                                        default: none
+
+openPMDWriter: dump simulation data with openPMD:
+  --openPMD.period arg                  enable openPMD IO [for each n-th step]
+  --openPMD.source arg                  data sources: [species_all, fields_all,
+                                        probe_all, E, B, J, e_density, 
+                                        H_density, C_density, N_density, 
+                                        H_boundElectronDensity, 
+                                        C_boundElectronDensity, 
+                                        N_boundElectronDensity, 
+                                        e_chargeDensity, H_chargeDensity, 
+                                        C_chargeDensity, N_chargeDensity, 
+                                        e_energyDensity, H_energyDensity, 
+                                        C_energyDensity, N_energyDensity] | 
+                                        default: species_all, fields_all
+  --openPMD.compression arg             Backend-specific openPMD compression 
+                                        method, e.g., zlib (see `adios_config 
+                                        -m` for help). Legacy parameter until 
+                                        compression can be fully configured via
+                                        JSON in the openPMD API. | default: 
+                                        none
+  --openPMD.file arg                    openPMD file basename
+  --openPMD.ext arg                     openPMD filename extension (this 
+                                        controls thebackend picked by the 
+                                        openPMD API) | default: bp
+  --openPMD.infix arg                   openPMD filename infix (use to pick 
+                                        file- or group-based layout in openPMD)
+                                        set to NULL to keep empty (e.g. to pick
+                                        group-based iteration layout) | 
+                                        default: _%06T
+  --openPMD.json arg                    advanced (backend) configuration for 
+                                        openPMD in JSON format | default: {}
+  --openPMD.dataPreparationStrategy arg Strategy for preparation of particle 
+                                        data ('doubleBuffer' or 
+                                        'mappedMemory'). Aliases 'adios' and 
+                                        'hdf5' may be used respectively. | 
+                                        default: doubleBuffer
+
+SumCurrents:
+  --sumcurr.period arg                  enable plugin [for each n-th step]
+
+ChargeConservation: Print the maximum charge deviation between particles and div E to textfile 'chargeConservation.dat':
+  --chargeConservation.period arg       enable plugin [for each n-th step]
+
+IntensityPlugin: calculate the maximum and integrated E-Field energy
+over laser propagation direction:
+  --E_intensity.period arg              enable plugin [for each n-th step]
+
+HDF5Writer: dump simulation data with hdf5:
+  --hdf5.period arg                     enable HDF5 IO [for each n-th step]
+  --hdf5.source arg                     data sources: [species_all, fields_all,
+                                        probe_all, E, B, J, e_density, 
+                                        H_density, C_density, N_density, 
+                                        H_boundElectronDensity, 
+                                        C_boundElectronDensity, 
+                                        N_boundElectronDensity, 
+                                        e_chargeDensity, H_chargeDensity, 
+                                        C_chargeDensity, N_chargeDensity, 
+                                        e_energyDensity, H_energyDensity, 
+                                        C_energyDensity, N_energyDensity] | 
+                                        default: species_all, fields_all
+  --hdf5.file arg                       HDF5 output filename (prefix)
+
+ResourceLog:
+  --resourceLog.period arg              Enable ResourceLog plugin [for each 
+                                        n-th step]
+  --resourceLog.prefix arg (=resourceLog_)
+                                        Set the filename prefix for output file
+                                        if a filestream was selected
+  --resourceLog.stream arg (=file)      Output stream [stdout, stderr, file]
+  --resourceLog.properties arg          List of properties to log [rank, 
+                                        position, currentStep, cellCount, 
+                                        particleCount]
+  --resourceLog.format arg (=json)      Output format of log (pp for pretty 
+                                        print) [json, jsonpp, xml, xmlpp]
+
+SliceFieldPrinter: prints a slice of a field:
+  --B_slice.period arg                  notify period
+  --B_slice.fileName arg                file name to store slices in
+  --B_slice.plane arg                   specifies the axis which stands on the 
+                                        cutting plane (0,1,2)
+  --B_slice.slicePoint arg              slice point 0.0 <= x <= 1.0
+
+SliceFieldPrinter: prints a slice of a field:
+  --E_slice.period arg                  notify period
+  --E_slice.fileName arg                file name to store slices in
+  --E_slice.plane arg                   specifies the axis which stands on the 
+                                        cutting plane (0,1,2)
+  --E_slice.slicePoint arg              slice point 0.0 <= x <= 1.0
+
+SliceFieldPrinter: prints a slice of a field:
+  --J_slice.period arg                  notify period
+  --J_slice.fileName arg                file name to store slices in
+  --J_slice.plane arg                   specifies the axis which stands on the 
+                                        cutting plane (0,1,2)
+  --J_slice.slicePoint arg              slice point 0.0 <= x <= 1.0
+
+EnergyParticles: calculate the energy of a species:
+  --e_energy.period arg                 compute kinetic and total energy [for 
+                                        each n-th step] enable plugin by 
+                                        setting a non-zero value
+  --e_energy.filter arg                 particle filter: [all]
+
+CalcEmittance: calculate the slice emittance of a species:
+  --e_emittance.period arg              compute slice emittance[for each n-th 
+                                        step] enable plugin by setting a 
+                                        non-zero value
+  --e_emittance.filter arg              particle filter: [all]
+
+BinEnergyParticles: calculate a energy histogram of a species:
+  --e_energyHistogram.period arg        enable plugin [for each n-th step]
+  --e_energyHistogram.filter arg        particle filter: [all]
+  --e_energyHistogram.binCount arg      number of bins for the energy range | 
+                                        default: 1024
+  --e_energyHistogram.minEnergy arg     minEnergy[in keV] | default: 0
+  --e_energyHistogram.maxEnergy arg     maxEnergy[in keV]
+
+CountParticles: count macro particles of a species:
+  --e_macroParticlesCount.period arg    enable plugin [for each n-th step]
+
+PngPlugin: create png's of a species and fields:
+  --e_png.period arg                    enable data output [for each n-th step]
+  --e_png.axis arg                      axis which are shown [valid values 
+                                        x,y,z] example: yz
+  --e_png.slicePoint arg                value range: 0 <= x <= 1 , point of the
+                                        slice
+  --e_png.folder arg                    folder for output files
+
+ParticleCalorimeter: (virtually) propagates and collects particles to infinite distance:
+  --e_calorimeter.period arg            enable plugin [for each n-th step]
+  --e_calorimeter.file arg              output filename (prefix)
+  --e_calorimeter.filter arg            particle filter: [all]
+  --e_calorimeter.numBinsYaw arg        number of bins for angle yaw. | 
+                                        default: 64
+  --e_calorimeter.numBinsPitch arg      number of bins for angle pitch. | 
+                                        default: 64
+  --e_calorimeter.numBinsEnergy arg     number of bins for the energy spectrum.
+                                        Disabled by default. | default: 1
+  --e_calorimeter.minEnergy arg         minimal detectable energy in keV. | 
+                                        default: 0
+  --e_calorimeter.maxEnergy arg         maximal detectable energy in keV. | 
+                                        default: 1000
+  --e_calorimeter.logScale arg          enable logarithmic energy scale. | 
+                                        default: 0
+  --e_calorimeter.openingYaw arg        opening angle yaw in degrees. 0 <= x <=
+                                        360. | default: 360
+  --e_calorimeter.openingPitch arg      opening angle pitch in degrees. 0 <= x 
+                                        <= 180. | default: 180
+  --e_calorimeter.posYaw arg            yaw coordinate of calorimeter position 
+                                        in degrees. Defaults to +y direction. |
+                                        default: 0
+  --e_calorimeter.posPitch arg          pitch coordinate of calorimeter 
+                                        position in degrees. Defaults to +y 
+                                        direction. | default: 0
+
+PhaseSpace: create phase space of a species:
+  --e_phaseSpace.period arg             notify period
+  --e_phaseSpace.filter arg             particle filter: [all]
+  --e_phaseSpace.space arg              spatial component (x, y, z)
+  --e_phaseSpace.momentum arg           momentum component (px, py, pz)
+  --e_phaseSpace.min arg                min range momentum [m_species c]
+  --e_phaseSpace.max arg                max range momentum [m_species c]
+
+PositionsParticles: write position of one particle of a species to std::cout:
+  --e_position.period arg               enable plugin [for each n-th step]
+
+ParticleMerger: merges several macroparticles with similar position and momentum into a single one.
+plugin disabled. Enable plugin by adding the `voronoiCellId` attribute to the particle attribute list.:
+
+RandomizedParticleMerger: merges several macroparticles with similar position and momentum into a single one.
+plugin disabled. Enable plugin by adding the `voronoiCellId` attribute to the particle attribute list.:
+
+PerSuperCell: create hdf5 with macro particle count per superCell:
+  --e_macroParticlesPerSuperCell.period arg
+                                        enable plugin [for each n-th step]
+
+EnergyParticles: calculate the energy of a species:
+  --H_energy.period arg                 compute kinetic and total energy [for 
+                                        each n-th step] enable plugin by 
+                                        setting a non-zero value
+  --H_energy.filter arg                 particle filter: [all]
+
+CalcEmittance: calculate the slice emittance of a species:
+  --H_emittance.period arg              compute slice emittance[for each n-th 
+                                        step] enable plugin by setting a 
+                                        non-zero value
+  --H_emittance.filter arg              particle filter: [all]
+
+BinEnergyParticles: calculate a energy histogram of a species:
+  --H_energyHistogram.period arg        enable plugin [for each n-th step]
+  --H_energyHistogram.filter arg        particle filter: [all]
+  --H_energyHistogram.binCount arg      number of bins for the energy range | 
+                                        default: 1024
+  --H_energyHistogram.minEnergy arg     minEnergy[in keV] | default: 0
+  --H_energyHistogram.maxEnergy arg     maxEnergy[in keV]
+
+CountParticles: count macro particles of a species:
+  --H_macroParticlesCount.period arg    enable plugin [for each n-th step]
+
+PngPlugin: create png's of a species and fields:
+  --H_png.period arg                    enable data output [for each n-th step]
+  --H_png.axis arg                      axis which are shown [valid values 
+                                        x,y,z] example: yz
+  --H_png.slicePoint arg                value range: 0 <= x <= 1 , point of the
+                                        slice
+  --H_png.folder arg                    folder for output files
+
+ParticleCalorimeter: (virtually) propagates and collects particles to infinite distance:
+  --H_calorimeter.period arg            enable plugin [for each n-th step]
+  --H_calorimeter.file arg              output filename (prefix)
+  --H_calorimeter.filter arg            particle filter: [all]
+  --H_calorimeter.numBinsYaw arg        number of bins for angle yaw. | 
+                                        default: 64
+  --H_calorimeter.numBinsPitch arg      number of bins for angle pitch. | 
+                                        default: 64
+  --H_calorimeter.numBinsEnergy arg     number of bins for the energy spectrum.
+                                        Disabled by default. | default: 1
+  --H_calorimeter.minEnergy arg         minimal detectable energy in keV. | 
+                                        default: 0
+  --H_calorimeter.maxEnergy arg         maximal detectable energy in keV. | 
+                                        default: 1000
+  --H_calorimeter.logScale arg          enable logarithmic energy scale. | 
+                                        default: 0
+  --H_calorimeter.openingYaw arg        opening angle yaw in degrees. 0 <= x <=
+                                        360. | default: 360
+  --H_calorimeter.openingPitch arg      opening angle pitch in degrees. 0 <= x 
+                                        <= 180. | default: 180
+  --H_calorimeter.posYaw arg            yaw coordinate of calorimeter position 
+                                        in degrees. Defaults to +y direction. |
+                                        default: 0
+  --H_calorimeter.posPitch arg          pitch coordinate of calorimeter 
+                                        position in degrees. Defaults to +y 
+                                        direction. | default: 0
+
+PhaseSpace: create phase space of a species:
+  --H_phaseSpace.period arg             notify period
+  --H_phaseSpace.filter arg             particle filter: [all]
+  --H_phaseSpace.space arg              spatial component (x, y, z)
+  --H_phaseSpace.momentum arg           momentum component (px, py, pz)
+  --H_phaseSpace.min arg                min range momentum [m_species c]
+  --H_phaseSpace.max arg                max range momentum [m_species c]
+
+PositionsParticles: write position of one particle of a species to std::cout:
+  --H_position.period arg               enable plugin [for each n-th step]
+
+ParticleMerger: merges several macroparticles with similar position and momentum into a single one.
+plugin disabled. Enable plugin by adding the `voronoiCellId` attribute to the particle attribute list.:
+
+RandomizedParticleMerger: merges several macroparticles with similar position and momentum into a single one.
+plugin disabled. Enable plugin by adding the `voronoiCellId` attribute to the particle attribute list.:
+
+PerSuperCell: create hdf5 with macro particle count per superCell:
+  --H_macroParticlesPerSuperCell.period arg
+                                        enable plugin [for each n-th step]
+
+EnergyParticles: calculate the energy of a species:
+  --C_energy.period arg                 compute kinetic and total energy [for 
+                                        each n-th step] enable plugin by 
+                                        setting a non-zero value
+  --C_energy.filter arg                 particle filter: [all]
+
+CalcEmittance: calculate the slice emittance of a species:
+  --C_emittance.period arg              compute slice emittance[for each n-th 
+                                        step] enable plugin by setting a 
+                                        non-zero value
+  --C_emittance.filter arg              particle filter: [all]
+
+BinEnergyParticles: calculate a energy histogram of a species:
+  --C_energyHistogram.period arg        enable plugin [for each n-th step]
+  --C_energyHistogram.filter arg        particle filter: [all]
+  --C_energyHistogram.binCount arg      number of bins for the energy range | 
+                                        default: 1024
+  --C_energyHistogram.minEnergy arg     minEnergy[in keV] | default: 0
+  --C_energyHistogram.maxEnergy arg     maxEnergy[in keV]
+
+CountParticles: count macro particles of a species:
+  --C_macroParticlesCount.period arg    enable plugin [for each n-th step]
+
+PngPlugin: create png's of a species and fields:
+  --C_png.period arg                    enable data output [for each n-th step]
+  --C_png.axis arg                      axis which are shown [valid values 
+                                        x,y,z] example: yz
+  --C_png.slicePoint arg                value range: 0 <= x <= 1 , point of the
+                                        slice
+  --C_png.folder arg                    folder for output files
+
+ParticleCalorimeter: (virtually) propagates and collects particles to infinite distance:
+  --C_calorimeter.period arg            enable plugin [for each n-th step]
+  --C_calorimeter.file arg              output filename (prefix)
+  --C_calorimeter.filter arg            particle filter: [all]
+  --C_calorimeter.numBinsYaw arg        number of bins for angle yaw. | 
+                                        default: 64
+  --C_calorimeter.numBinsPitch arg      number of bins for angle pitch. | 
+                                        default: 64
+  --C_calorimeter.numBinsEnergy arg     number of bins for the energy spectrum.
+                                        Disabled by default. | default: 1
+  --C_calorimeter.minEnergy arg         minimal detectable energy in keV. | 
+                                        default: 0
+  --C_calorimeter.maxEnergy arg         maximal detectable energy in keV. | 
+                                        default: 1000
+  --C_calorimeter.logScale arg          enable logarithmic energy scale. | 
+                                        default: 0
+  --C_calorimeter.openingYaw arg        opening angle yaw in degrees. 0 <= x <=
+                                        360. | default: 360
+  --C_calorimeter.openingPitch arg      opening angle pitch in degrees. 0 <= x 
+                                        <= 180. | default: 180
+  --C_calorimeter.posYaw arg            yaw coordinate of calorimeter position 
+                                        in degrees. Defaults to +y direction. |
+                                        default: 0
+  --C_calorimeter.posPitch arg          pitch coordinate of calorimeter 
+                                        position in degrees. Defaults to +y 
+                                        direction. | default: 0
+
+PhaseSpace: create phase space of a species:
+  --C_phaseSpace.period arg             notify period
+  --C_phaseSpace.filter arg             particle filter: [all]
+  --C_phaseSpace.space arg              spatial component (x, y, z)
+  --C_phaseSpace.momentum arg           momentum component (px, py, pz)
+  --C_phaseSpace.min arg                min range momentum [m_species c]
+  --C_phaseSpace.max arg                max range momentum [m_species c]
+
+PositionsParticles: write position of one particle of a species to std::cout:
+  --C_position.period arg               enable plugin [for each n-th step]
+
+ParticleMerger: merges several macroparticles with similar position and momentum into a single one.
+plugin disabled. Enable plugin by adding the `voronoiCellId` attribute to the particle attribute list.:
+
+RandomizedParticleMerger: merges several macroparticles with similar position and momentum into a single one.
+plugin disabled. Enable plugin by adding the `voronoiCellId` attribute to the particle attribute list.:
+
+PerSuperCell: create hdf5 with macro particle count per superCell:
+  --C_macroParticlesPerSuperCell.period arg
+                                        enable plugin [for each n-th step]
+
+EnergyParticles: calculate the energy of a species:
+  --N_energy.period arg                 compute kinetic and total energy [for 
+                                        each n-th step] enable plugin by 
+                                        setting a non-zero value
+  --N_energy.filter arg                 particle filter: [all]
+
+CalcEmittance: calculate the slice emittance of a species:
+  --N_emittance.period arg              compute slice emittance[for each n-th 
+                                        step] enable plugin by setting a 
+                                        non-zero value
+  --N_emittance.filter arg              particle filter: [all]
+
+BinEnergyParticles: calculate a energy histogram of a species:
+  --N_energyHistogram.period arg        enable plugin [for each n-th step]
+  --N_energyHistogram.filter arg        particle filter: [all]
+  --N_energyHistogram.binCount arg      number of bins for the energy range | 
+                                        default: 1024
+  --N_energyHistogram.minEnergy arg     minEnergy[in keV] | default: 0
+  --N_energyHistogram.maxEnergy arg     maxEnergy[in keV]
+
+CountParticles: count macro particles of a species:
+  --N_macroParticlesCount.period arg    enable plugin [for each n-th step]
+
+PngPlugin: create png's of a species and fields:
+  --N_png.period arg                    enable data output [for each n-th step]
+  --N_png.axis arg                      axis which are shown [valid values 
+                                        x,y,z] example: yz
+  --N_png.slicePoint arg                value range: 0 <= x <= 1 , point of the
+                                        slice
+  --N_png.folder arg                    folder for output files
+
+ParticleCalorimeter: (virtually) propagates and collects particles to infinite distance:
+  --N_calorimeter.period arg            enable plugin [for each n-th step]
+  --N_calorimeter.file arg              output filename (prefix)
+  --N_calorimeter.filter arg            particle filter: [all]
+  --N_calorimeter.numBinsYaw arg        number of bins for angle yaw. | 
+                                        default: 64
+  --N_calorimeter.numBinsPitch arg      number of bins for angle pitch. | 
+                                        default: 64
+  --N_calorimeter.numBinsEnergy arg     number of bins for the energy spectrum.
+                                        Disabled by default. | default: 1
+  --N_calorimeter.minEnergy arg         minimal detectable energy in keV. | 
+                                        default: 0
+  --N_calorimeter.maxEnergy arg         maximal detectable energy in keV. | 
+                                        default: 1000
+  --N_calorimeter.logScale arg          enable logarithmic energy scale. | 
+                                        default: 0
+  --N_calorimeter.openingYaw arg        opening angle yaw in degrees. 0 <= x <=
+                                        360. | default: 360
+  --N_calorimeter.openingPitch arg      opening angle pitch in degrees. 0 <= x 
+                                        <= 180. | default: 180
+  --N_calorimeter.posYaw arg            yaw coordinate of calorimeter position 
+                                        in degrees. Defaults to +y direction. |
+                                        default: 0
+  --N_calorimeter.posPitch arg          pitch coordinate of calorimeter 
+                                        position in degrees. Defaults to +y 
+                                        direction. | default: 0
+
+PhaseSpace: create phase space of a species:
+  --N_phaseSpace.period arg             notify period
+  --N_phaseSpace.filter arg             particle filter: [all]
+  --N_phaseSpace.space arg              spatial component (x, y, z)
+  --N_phaseSpace.momentum arg           momentum component (px, py, pz)
+  --N_phaseSpace.min arg                min range momentum [m_species c]
+  --N_phaseSpace.max arg                max range momentum [m_species c]
+
+PositionsParticles: write position of one particle of a species to std::cout:
+  --N_position.period arg               enable plugin [for each n-th step]
+
+ParticleMerger: merges several macroparticles with similar position and momentum into a single one.
+plugin disabled. Enable plugin by adding the `voronoiCellId` attribute to the particle attribute list.:
+
+RandomizedParticleMerger: merges several macroparticles with similar position and momentum into a single one.
+plugin disabled. Enable plugin by adding the `voronoiCellId` attribute to the particle attribute list.:
+
+PerSuperCell: create hdf5 with macro particle count per superCell:
+  --N_macroParticlesPerSuperCell.period arg
+                                        enable plugin [for each n-th step]
+
+CountParticles: count macro particles of a species:
+  --probe_macroParticlesCount.period arg
+                                        enable plugin [for each n-th step]
+
+ParticleMerger: merges several macroparticles with similar position and momentum into a single one.
+plugin disabled. Enable plugin by adding the `voronoiCellId` attribute to the particle attribute list.:
+
+RandomizedParticleMerger: merges several macroparticles with similar position and momentum into a single one.
+plugin disabled. Enable plugin by adding the `voronoiCellId` attribute to the particle attribute list.:
+
+PerSuperCell: create hdf5 with macro particle count per superCell:
+  --probe_macroParticlesPerSuperCell.period arg
+                                        enable plugin [for each n-th step]
+
