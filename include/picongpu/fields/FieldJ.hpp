@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Axel Huebl, Heiko Burau, Rene Widera, Richard Pausch,
+/* Copyright 2013-2021 Axel Huebl, Heiko Burau, Rene Widera, Richard Pausch,
  *                     Benjamin Worpitz
  *
  * This file is part of PIConGPU.
@@ -42,7 +42,6 @@
 
 namespace picongpu
 {
-
     /** Representation of the current density field
      *
      * Stores field values on host and device and provides data synchronization
@@ -51,10 +50,11 @@ namespace picongpu
      * Implements interfaces defined by SimulationFieldHelper< MappingDesc > and
      * ISimulationData.
      */
-    class FieldJ : public SimulationFieldHelper<MappingDesc>, public ISimulationData
+    class FieldJ
+        : public SimulationFieldHelper<MappingDesc>
+        , public ISimulationData
     {
     public:
-
         //! Type of each field value
         using ValueType = float3_X;
 
@@ -65,19 +65,19 @@ namespace picongpu
         using UnitValueType = promoteType<float_64, ValueType>::type;
 
         //! Type of data box for field values on host and device
-        using DataBoxType = DataBox<PitchedBox<ValueType, simDim> >;
+        using DataBoxType = DataBox<PitchedBox<ValueType, simDim>>;
 
         /** Create a field
          *
          * @param cellDescription mapping for kernels
          */
-        HINLINE FieldJ(MappingDesc const & cellDescription);
+        HINLINE FieldJ(MappingDesc const& cellDescription);
 
         //! Destroy a field
         HINLINE virtual ~FieldJ() = default;
 
         //! Get a reference to the host-device buffer for the field values
-        HINLINE GridBuffer<ValueType, simDim> &getGridBuffer();
+        HINLINE GridBuffer<ValueType, simDim>& getGridBuffer();
 
         //! Get the grid layout
         HINLINE GridLayout<simDim> getGridLayout();
@@ -149,17 +149,17 @@ namespace picongpu
          * @param currentStep index of time iteration
          */
         template<uint32_t T_area, class T_Species>
-        HINLINE void computeCurrent(T_Species & species, uint32_t currentStep);
+        HINLINE void computeCurrent(T_Species& species, uint32_t currentStep);
 
         /** Smooth current density and add it to the electric field
          *
          * @tparam T_area area to operate on
-         * @tparam T_CurrentInterpolation current interpolation type
+         * @tparam T_CurrentInterpolationFunctor current interpolation functor type
          *
-         * @param myCurrentInterpolation current interpolation
+         * @param myCurrentInterpolationFunctor current interpolation functor
          */
-        template<uint32_t T_area, class T_CurrentInterpolation>
-        HINLINE void addCurrentToEMF( T_CurrentInterpolation& myCurrentInterpolation );
+        template<uint32_t T_area, class T_CurrentInterpolationFunctor>
+        HINLINE void addCurrentToEMF(T_CurrentInterpolationFunctor myCurrentInterpolationFunctor);
 
         /** Bash field in a direction.
          *
@@ -176,13 +176,11 @@ namespace picongpu
         HINLINE void insertField(uint32_t exchangeType);
 
     private:
-
         //! Host-device buffer for current density values
         GridBuffer<ValueType, simDim> buffer;
 
         //! Buffer for receiving near-boundary values
-        std::unique_ptr< GridBuffer<ValueType, simDim> > fieldJrecv;
-
+        std::unique_ptr<GridBuffer<ValueType, simDim>> fieldJrecv;
     };
 
 } // namespace picongpu

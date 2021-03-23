@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Rene Widera
+/* Copyright 2013-2021 Rene Widera
  *
  * This file is part of PIConGPU.
  *
@@ -23,37 +23,36 @@
 
 namespace picongpu
 {
+    namespace traits
+    {
+        /**Get margin of a solver
+         * class must define a LowerMargin and UpperMargin for any valid solver
+         *
+         * \tparam Solver solver which needs ghost cells for solving a problem
+         *         if solver not define `LowerMargin` and `UpperMargin` this trait (GetMargin)
+         *         must be specialized
+         * \tparam T_Parameter an optional parameter type
+         * for different objects
+         */
+        template<class Solver, typename T_Parameter = void>
+        struct GetMargin
+        {
+            using LowerMargin = typename Solver::LowerMargin;
+            using UpperMargin = typename Solver::UpperMargin;
+        };
 
-namespace traits
-{
-/**Get margin of a solver
- * class must define a LowerMargin and UpperMargin for any valid solver
- *
- * \tparam Solver solver which needs ghost cells for solving a problem
- *         if solver not define `LowerMargin` and `UpperMargin` this trait (GetMargin)
- *         must be specialized
- * \tparam SubSetName a optional name (id) if solver needs different ghost cells
- * for different objects
- */
-template<class Solver,unsigned int SubSetName=0>
-struct GetMargin
-{
-    using LowerMargin = typename Solver::LowerMargin;
-    using UpperMargin = typename Solver::UpperMargin;
-};
+        template<typename T_Type>
+        struct GetLowerMargin
+        {
+            typedef typename traits::GetMargin<T_Type>::LowerMargin type;
+        };
 
-template<typename T_Type>
-struct GetLowerMargin
-{
-    typedef typename traits::GetMargin<T_Type>::LowerMargin type;
-};
+        template<typename T_Type>
+        struct GetUpperMargin
+        {
+            typedef typename traits::GetMargin<T_Type>::UpperMargin type;
+        };
 
-template<typename T_Type>
-struct GetUpperMargin
-{
-    typedef typename traits::GetMargin<T_Type>::UpperMargin type;
-};
+    } // namespace traits
 
-} //namespace traits
-
-}// namespace picongpu
+} // namespace picongpu

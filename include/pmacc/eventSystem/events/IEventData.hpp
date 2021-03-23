@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Felix Schmitt, Rene Widera, Wolfgang Hoenig,
+/* Copyright 2013-2021 Felix Schmitt, Rene Widera, Wolfgang Hoenig,
  *                     Benjamin Worpitz
  *
  * This file is part of PMacc.
@@ -35,13 +35,13 @@ namespace pmacc
     class IEventData
     {
     public:
-
-        IEventData(EventNotify *task) :
-        task(task)
-        {}
+        IEventData(EventNotify* task) : task(task)
+        {
+        }
 
         virtual ~IEventData()
-        {}
+        {
+        }
 
         EventNotify* getEventNotify()
         {
@@ -49,8 +49,7 @@ namespace pmacc
         }
 
     protected:
-        EventNotify *task;
-
+        EventNotify* task;
     };
 
-} //namespace pmacc
+} // namespace pmacc

@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Felix Schmitt, Heiko Burau, Rene Widera, Wolfgang Hoenig
+/* Copyright 2013-2021 Felix Schmitt, Heiko Burau, Rene Widera, Wolfgang Hoenig
  *
  * This file is part of PMacc.
  *
@@ -29,17 +29,18 @@
 namespace pmacc
 {
     /**
-      * Groups local, global and total domain information.
-      *
-      * For a detailed description of domains, see the PIConGPU wiki page:
-      * https://github.com/ComputationalRadiationPhysics/picongpu/wiki/PIConGPU-domain-definitions
-      */
-    template <unsigned DIM>
+     * Groups local, global and total domain information.
+     *
+     * For a detailed description of domains, see the PIConGPU wiki page:
+     * https://github.com/ComputationalRadiationPhysics/picongpu/wiki/PIConGPU-domain-definitions
+     */
+    template<unsigned DIM>
     class SubGrid
     {
     public:
-
         typedef DataSpace<DIM> Size;
+
+        constexpr SubGrid& operator=(const SubGrid&) = default;
 
         /**
          * Initialize SubGrid instance
@@ -48,9 +49,7 @@ namespace pmacc
          * @param globalSize global domain size
          * @param localOffset local domain offset (formerly 'globalOffset')
          */
-        void init(const Size& localSize,
-                  const Size& globalSize,
-                  const Size& localOffset)
+        void init(const Size& localSize, const Size& globalSize, const Size& localOffset)
         {
             totalDomain = Selection<DIM>(globalSize);
             globalDomain = Selection<DIM>(globalSize);
@@ -114,7 +113,6 @@ namespace pmacc
         }
 
     private:
-
         friend class Environment<DIM>;
 
         /** total simulation volume, including active and inactive subvolumes */
@@ -131,7 +129,6 @@ namespace pmacc
          */
         SubGrid()
         {
-
         }
 
         static SubGrid<DIM>& getInstance()
@@ -149,12 +146,8 @@ namespace pmacc
          */
         SubGrid(const SubGrid& gc)
         {
-
         }
     };
 
 
-} //namespace pmacc
-
-
-
+} // namespace pmacc

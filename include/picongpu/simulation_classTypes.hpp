@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Axel Huebl, Felix Schmitt, Heiko Burau, Rene Widera
+/* Copyright 2013-2021 Axel Huebl, Felix Schmitt, Heiko Burau, Rene Widera
  *
  * This file is part of PIConGPU.
  *
@@ -34,7 +34,7 @@ namespace picongpu
 {
     using namespace pmacc;
 
-    //short name for access verbose types of picongpu
+    // short name for access verbose types of picongpu
     typedef PIConGPUVerbose picLog;
 
-} //namespace picongpu
+} // namespace picongpu

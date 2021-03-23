@@ -1,4 +1,4 @@
-/* Copyright 2014-2020 Rene Widera, Alexander Grund
+/* Copyright 2014-2021 Rene Widera, Alexander Grund
  *
  * This file is part of PMacc.
  *
@@ -29,22 +29,19 @@
 
 namespace pmacc
 {
+    /** Resolve and remove types from a sequence
+     *
+     * @tparam T_MPLSeqSrc source sequence from were we delete types
+     * @tparam T_MPLSeqObjectsToRemove sequence with types which should be deleted (pmacc aliases are allowed)
+     */
+    template<typename T_MPLSeqSrc, typename T_MPLSeqObjectsToRemove>
+    struct ResolveAndRemoveFromSeq
+    {
+        typedef T_MPLSeqSrc MPLSeqSrc;
+        typedef T_MPLSeqObjectsToRemove MPLSeqObjectsToRemove;
+        typedef typename ResolveAliases<MPLSeqObjectsToRemove, MPLSeqSrc, errorHandlerPolicies::ReturnValue>::type
+            ResolvedSeqWithObjectsToRemove;
+        typedef typename RemoveFromSeq<MPLSeqSrc, ResolvedSeqWithObjectsToRemove>::type type;
+    };
 
-/** Resolve and remove types from a sequence
- *
- * @tparam T_MPLSeqSrc source sequence from were we delete types
- * @tparam T_MPLSeqObjectsToRemove sequence with types which should be deleted (pmacc aliases are allowed)
- */
-template<
-typename T_MPLSeqSrc,
-typename T_MPLSeqObjectsToRemove
->
-struct ResolveAndRemoveFromSeq
-{
-    typedef T_MPLSeqSrc MPLSeqSrc;
-    typedef T_MPLSeqObjectsToRemove MPLSeqObjectsToRemove;
-    typedef typename ResolveAliases<MPLSeqObjectsToRemove, MPLSeqSrc, errorHandlerPolicies::ReturnValue>::type ResolvedSeqWithObjectsToRemove;
-    typedef typename RemoveFromSeq<MPLSeqSrc, ResolvedSeqWithObjectsToRemove>::type type;
-};
-
-}//namespace pmacc
+} // namespace pmacc

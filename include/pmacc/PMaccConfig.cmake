@@ -1,4 +1,4 @@
-# Copyright 2015-2020 Erik Zenker, Rene Widera, Axel Huebl
+# Copyright 2015-2021 Erik Zenker, Rene Widera, Axel Huebl
 #
 # This file is part of PMacc.
 #
@@ -343,8 +343,8 @@ if(ALPAKA_ACC_GPU_CUDA_ENABLE)
                             "(Found ${CUDA_VERSION})")
     endif()
     # Newer CUDA releases: probably troublesome, warn at least
-    if(CUDA_VERSION VERSION_GREATER 10.2)
-        message(WARNING "Untested CUDA release >10.2 (Found ${CUDA_VERSION})! "
+    if(CUDA_VERSION VERSION_GREATER 11.2)
+        message(WARNING "Untested CUDA release >11.2 (Found ${CUDA_VERSION})! "
                         "Maybe use a newer PIConGPU?")
     endif()
 endif()
@@ -368,7 +368,7 @@ endif()
 # Find mallocMC
 ################################################################################
 
-if(ALPAKA_ACC_GPU_CUDA_ENABLE)
+if(ALPAKA_ACC_GPU_CUDA_ENABLE OR ALPAKA_ACC_GPU_HIP_ENABLE)
     set(mallocMC_ALPAKA_PROVIDER "extern" CACHE STRING "Select which alpaka is used for mallocMC")
     find_package(mallocMC 2.5.0 QUIET)
 

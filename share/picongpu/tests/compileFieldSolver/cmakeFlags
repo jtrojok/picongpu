@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright 2013-2020 Axel Huebl, Rene Widera
+# Copyright 2013-2021 Axel Huebl, Rene Widera
 #
 # This file is part of PIConGPU.
 #
@@ -30,11 +30,9 @@
 #   - increase by 1, no gaps
 
 # Yee solver is tested in the example FieldAbsorberTest
-flags[0]="-DPARAM_OVERWRITES:LIST='-DPARAM_FIELDSOLVER=LehePML;-DPARAM_PRECISION=precision64Bit'"
-flags[1]="-DPARAM_OVERWRITES:LIST='-DPARAM_FIELDSOLVER=LehePML;-DPARAM_DIMENSION=DIM2'"
-flags[2]="-DPARAM_OVERWRITES:LIST='-DPARAM_FIELDSOLVER=DirSplitting;-DPARAM_CURRENTINTERPOLATION=NoneDS'"
-flags[3]="-DPARAM_OVERWRITES:LIST='-DPARAM_FIELDSOLVER=Lehe;-DPARAM_CURRENTINTERPOLATION=Binomial'"
-flags[4]="-DPARAM_OVERWRITES:LIST='-DPARAM_FIELDSOLVER=Lehe;-DPARAM_DIMENSION=DIM2'"
+flags[0]="-DPARAM_OVERWRITES:LIST='-DPARAM_FIELDSOLVER=LehePML<>;-DPARAM_PRECISION=precision64Bit'"
+flags[1]="-DPARAM_OVERWRITES:LIST='-DPARAM_FIELDSOLVER=LehePML<>;-DPARAM_DIMENSION=DIM2'"
+flags[2]="-DPARAM_OVERWRITES:LIST='-DPARAM_FIELDSOLVER=Lehe<>;-DPARAM_DIMENSION=DIM2'"
 
 
 ################################################################################

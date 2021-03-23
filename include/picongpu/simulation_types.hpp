@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Axel Huebl, Felix Schmitt, Heiko Burau, Rene Widera
+/* Copyright 2013-2021 Axel Huebl, Felix Schmitt, Heiko Burau, Rene Widera
  *
  * This file is part of PIConGPU.
  *
@@ -34,41 +34,20 @@
 
 namespace picongpu
 {
+    namespace precision32Bit
+    {
+        using precisionType = float;
+    }
 
-//! define all elements which can send and resive
+    namespace precision64Bit
+    {
+        using precisionType = double;
+    }
 
-enum CommunicationTag
-{
-    NO_COMMUNICATION = 0u,
-    FIELD_B = 1u,
-    FIELD_E = 2u,
-    FIELD_J = 3u,
-    FIELD_JRECV = 4u,
-    SPECIES_FIRSTTAG = 42u
-};
+    namespace math = cupla::device::math;
+    using namespace pmacc::algorithms::precisionCast;
+    using namespace pmacc::algorithms::promoteType;
+    using namespace pmacc::traits;
+    using namespace picongpu::traits;
 
-
-//! defines field types some various methods (e.g. Laser::manipulate)
-
-enum FieldType
-{
-    FIELD_TYPE_E, FIELD_TYPE_B, FIELD_TYPE_TMP
-};
-
-namespace precision32Bit
-{
-using precisionType = float;
-}
-
-namespace precision64Bit
-{
-using precisionType = double;
-}
-
-namespace math = cupla::device::math;
-using namespace pmacc::algorithms::precisionCast;
-using namespace pmacc::algorithms::promoteType;
-using namespace pmacc::traits;
-using namespace picongpu::traits;
-
-}
+} // namespace picongpu

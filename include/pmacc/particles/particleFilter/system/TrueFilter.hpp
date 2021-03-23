@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Rene Widera, Benjamin Worpitz
+/* Copyright 2013-2021 Rene Widera, Benjamin Worpitz
  *
  * This file is part of PMacc.
  *
@@ -27,12 +27,9 @@
 
 namespace pmacc
 {
-
     class TrueFilter
     {
-
     public:
-
         HDINLINE TrueFilter()
         {
         }
@@ -44,4 +41,4 @@ namespace pmacc
         }
     };
 
-} //namespace Frame
+} // namespace pmacc

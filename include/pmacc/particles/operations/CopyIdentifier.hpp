@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Rene Widera
+/* Copyright 2013-2021 Rene Widera
  *
  * This file is part of PMacc.
  *
@@ -27,21 +27,17 @@
 
 namespace pmacc
 {
+    namespace pmath = pmacc::math;
 
-namespace pmath = pmacc::math;
 
-
-template<typename T_Key>
-struct CopyIdentifier
-{
-    template<typename T_T1,typename T_T2>
-    HDINLINE
-    void operator()(T_T1& dest, const T_T2& src)
+    template<typename T_Key>
+    struct CopyIdentifier
     {
-        dest[T_Key()]=src[T_Key()];
-    }
+        template<typename T_T1, typename T_T2>
+        HDINLINE void operator()(T_T1& dest, const T_T2& src)
+        {
+            dest[T_Key()] = src[T_Key()];
+        }
+    };
 
-
-};
-
-}//namespace pmacc
+} // namespace pmacc

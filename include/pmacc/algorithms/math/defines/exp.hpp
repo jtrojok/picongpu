@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Heiko Burau, Rene Widera, Richard Pausch
+/* Copyright 2013-2021 Heiko Burau, Rene Widera, Richard Pausch
  *
  * This file is part of PMacc.
  *
@@ -24,17 +24,16 @@
 
 namespace pmacc
 {
-namespace math
-{
-
-    template<typename Type>
-    struct Log10;
-
-    template<typename T1>
-    HDINLINE typename Log10< T1 >::result log10(const T1& value)
+    namespace math
     {
-        return Log10< T1 > ()(value);
-    }
+        template<typename Type>
+        struct Log10;
 
-} //namespace math
-}//namespace pmacc
+        template<typename T1>
+        HDINLINE typename Log10<T1>::result log10(const T1& value)
+        {
+            return Log10<T1>()(value);
+        }
+
+    } // namespace math
+} // namespace pmacc

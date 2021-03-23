@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Rene Widera, Benjamin Worpitz, Alexander Grund
+/* Copyright 2013-2021 Rene Widera, Benjamin Worpitz, Alexander Grund
  *
  * This file is part of PMacc.
  *
@@ -34,9 +34,9 @@
  * to create an instance of this identifier you can use:
  *      varname();   or varname_
  */
-#define identifier(name, ...)                                                  \
-    struct name                                                                \
-    {                                                                          \
-        __VA_ARGS__                                                            \
-    };                                                                         \
+#define identifier(name, ...)                                                                                         \
+    struct name                                                                                                       \
+    {                                                                                                                 \
+        __VA_ARGS__                                                                                                   \
+    };                                                                                                                \
     constexpr name PMACC_JOIN(name, _)

@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Heiko Burau, Rene Widera, Benjamin Worpitz
+/* Copyright 2013-2021 Heiko Burau, Rene Widera, Benjamin Worpitz
  *
  * This file is part of PMacc.
  *
@@ -28,36 +28,36 @@
 
 namespace pmacc
 {
-namespace nvidia
-{
-namespace functors
-{
-    struct Max
+    namespace nvidia
     {
-        template<typename Dst, typename Src >
-        DINLINE void operator()(Dst & dst, const Src & src) const
+        namespace functors
         {
-            dst = math::max(dst, src);
-        }
+            struct Max
+            {
+                template<typename Dst, typename Src>
+                DINLINE void operator()(Dst& dst, const Src& src) const
+                {
+                    dst = math::max(dst, src);
+                }
 
-        template<typename Dst, typename Src, typename T_Acc >
-        DINLINE void operator()(const T_Acc &, Dst & dst, const Src & src) const
-        {
-            dst = math::max(dst, src);
-        }
-    };
-} // namespace functors
-} // namespace nvidia
+                template<typename Dst, typename Src, typename T_Acc>
+                DINLINE void operator()(const T_Acc&, Dst& dst, const Src& src) const
+                {
+                    dst = math::max(dst, src);
+                }
+            };
+        } // namespace functors
+    } // namespace nvidia
 } // namespace pmacc
 
 namespace pmacc
 {
-namespace mpi
-{
-    template<>
-    HINLINE MPI_Op getMPI_Op<pmacc::nvidia::functors::Max>()
+    namespace mpi
     {
-        return MPI_MAX;
-    }
-} // namespace mpi
+        template<>
+        HINLINE MPI_Op getMPI_Op<pmacc::nvidia::functors::Max>()
+        {
+            return MPI_MAX;
+        }
+    } // namespace mpi
 } // namespace pmacc

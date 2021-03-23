@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Heiko Burau, Rene Widera
+/* Copyright 2013-2021 Heiko Burau, Rene Widera
  *
  * This file is part of PMacc.
  *
@@ -23,17 +23,16 @@
 
 namespace pmacc
 {
-namespace math
-{
+    namespace math
+    {
+        template<typename Type>
+        struct Abs2;
 
-template<typename Type>
-struct Abs2;
+        template<typename T1>
+        HDINLINE typename Abs2<T1>::result abs2(const T1& value)
+        {
+            return Abs2<T1>()(value);
+        }
 
-template<typename T1>
-HDINLINE typename Abs2< T1 >::result abs2(const T1& value)
-{
-    return Abs2< T1 > ()(value);
-}
-
-} //namespace math
-}//namespace pmacc
+    } // namespace math
+} // namespace pmacc

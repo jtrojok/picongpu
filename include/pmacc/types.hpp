@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Felix Schmitt, Heiko Burau, Rene Widera,
+/* Copyright 2013-2021 Felix Schmitt, Heiko Burau, Rene Widera,
  *                     Wolfgang Hoenig, Benjamin Worpitz,
  *                     Alexander Grund
  *
@@ -30,14 +30,14 @@
 #include <cupla/types.hpp>
 
 #ifndef PMACC_CUDA_ENABLED
-#   define PMACC_CUDA_ENABLED ALPAKA_ACC_GPU_CUDA_ENABLED
+#    define PMACC_CUDA_ENABLED ALPAKA_ACC_GPU_CUDA_ENABLED
 #endif
 
-#if( PMACC_CUDA_ENABLED == 1 )
+#if(BOOST_LANG_CUDA || BOOST_COMP_HIP)
 /* include mallocMC before cupla renaming is activated, else we need the variable acc
  * to call atomic cuda functions
  */
-#   include <mallocMC/mallocMC.hpp>
+#    include <mallocMC/mallocMC.hpp>
 #endif
 
 
@@ -65,8 +65,7 @@
 
 namespace pmacc
 {
+    namespace bmpl = boost::mpl;
+    namespace bfs = boost::filesystem;
 
-namespace bmpl = boost::mpl;
-namespace bfs = boost::filesystem;
-
-} //namespace pmacc
+} // namespace pmacc

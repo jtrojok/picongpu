@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Felix Schmitt, Rene Widera
+/* Copyright 2013-2021 Felix Schmitt, Rene Widera
  *
  * This file is part of PMacc.
  *
@@ -34,7 +34,6 @@ namespace pmacc
     class StreamTask : public ITask
     {
     public:
-
         /**
          * Constructor
          *
@@ -94,17 +93,16 @@ namespace pmacc
 
 
     protected:
-
         /**
          * Activates this task by recording an event on its stream.
          */
         inline void activate();
 
 
-        EventStream *stream;
+        EventStream* stream;
         CudaEventHandle cuplaEvent;
         bool hasCudaEventHandle;
         bool alwaysFinished;
     };
 
-} //namespace pmacc
+} // namespace pmacc

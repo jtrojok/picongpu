@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Axel Huebl, Heiko Burau, Rene Widera, Remi Lehe,
+/* Copyright 2013-2021 Axel Huebl, Heiko Burau, Rene Widera, Remi Lehe,
  *                     Sergei Bastrakov
  *
  * This file is part of PIConGPU.
@@ -25,26 +25,25 @@
 
 namespace picongpu
 {
-namespace fields
-{
-namespace maxwellSolver
-{
-namespace lehe
-{
+    namespace fields
+    {
+        namespace maxwellSolver
+        {
+            namespace lehe
+            {
+                /** Tag for derivative used in the Lehe solver
+                 *
+                 * Implements eq. (6) in R. Lehe et al
+                 *     Phys. Rev. ST Accel. Beams 16, 021301 (2013)
+                 *
+                 * @tparam T_cherenkovFreeDirection direction to remove numerical Cherenkov
+                 *                                  radiation in, 0 = x, 1 = y, 2 = z
+                 *                                  (unrelated to differentiating direction)
+                 */
+                template<uint32_t T_cherenkovFreeDirection>
+                struct Derivative;
 
-    /** Tag for derivative used in the Lehe solver
-     *
-     * Implements eq. (6) in R. Lehe et al
-     *     Phys. Rev. ST Accel. Beams 16, 021301 (2013)
-     *
-     * @tparam T_cherenkovFreeDirection direction to remove numerical Cherenkov
-     *                                  radiation in, 0 = x, 1 = y, 2 = z
-     *                                  (unrelated to differentiating direction)
-     */
-    template< uint32_t T_cherenkovFreeDirection >
-    struct Derivative;
-
-} // namespace lehe
-} // namespace maxwellSolver
-} // namespace fields
+            } // namespace lehe
+        } // namespace maxwellSolver
+    } // namespace fields
 } // namespace picongpu

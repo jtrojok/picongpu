@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Heiko Burau, Rene Widera
+/* Copyright 2013-2021 Heiko Burau, Rene Widera
  *
  * This file is part of PMacc.
  *
@@ -27,21 +27,22 @@
 
 namespace pmacc
 {
-namespace zone
-{
-namespace tag
-{
-struct StaggeredZone {};
-}
+    namespace zone
+    {
+        namespace tag
+        {
+            struct StaggeredZone
+            {
+            };
+        } // namespace tag
 
-template<int T_dim>
-struct StaggeredZone : public SphericZone<T_dim>
-{
-    typedef tag::StaggeredZone tag;
-    math::UInt32<dim> staggered;
-    math::UInt32<dim> staggeredOffset;
-};
+        template<int T_dim>
+        struct StaggeredZone : public SphericZone<T_dim>
+        {
+            typedef tag::StaggeredZone tag;
+            math::UInt32<dim> staggered;
+            math::UInt32<dim> staggeredOffset;
+        };
 
-} // zone
-} // pmacc
-
+    } // namespace zone
+} // namespace pmacc

@@ -1,4 +1,4 @@
-/* Copyright 2014-2020 Rene Widera
+/* Copyright 2014-2021 Rene Widera
  *
  * This file is part of PIConGPU.
  *
@@ -22,6 +22,6 @@
 #include "picongpu/fields/currentDeposition/Esirkepov/EsirkepovNative.hpp"
 #include "picongpu/fields/currentDeposition/EmZ/EmZ.hpp"
 
-#if(SIMDIM==DIM3)
-#include "picongpu/fields/currentDeposition/VillaBune/CurrentVillaBune.hpp"
+#if(SIMDIM == DIM3)
+#    include "picongpu/fields/currentDeposition/VillaBune/CurrentVillaBune.hpp"
 #endif

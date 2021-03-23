@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Rene Widera
+/* Copyright 2013-2021 Rene Widera
  *
  * This file is part of PMacc.
  *
@@ -37,27 +37,12 @@
 
 namespace pmacc
 {
-
-
-
-template<typename UserTypeList = bmpl::vector<NullFrame> >
+    template<typename UserTypeList = bmpl::vector<NullFrame>>
     class FilterFactory
-{
-public:
+    {
+    public:
+        typedef
+            typename LinearInherit<typename MakeSeq<DefaultFilter<>, UserTypeList, TrueFilter>::type>::type FilterType;
+    };
 
-    typedef
-    typename LinearInherit
-    <
-        typename MakeSeq<
-           DefaultFilter<> ,
-           UserTypeList,
-           TrueFilter
-        >::type
-    >::type FilterType;
-
-};
-
-}//namespace pmacc
-
-
-
+} // namespace pmacc

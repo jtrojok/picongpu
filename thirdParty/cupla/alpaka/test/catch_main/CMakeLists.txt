@@ -11,9 +11,9 @@
 option(ALPAKA_USE_INTERNAL_CATCH2 "Use internally shipped Catch2" ON)
 
 if(ALPAKA_USE_INTERNAL_CATCH2)
-    message(STATUS "Catch2: Using INTERNAL version 2.11.0")
+    message(STATUS "Catch2: Using INTERNAL version 2.13.3")
 else()
-    find_package(Catch2 2.11.0 CONFIG REQUIRED)
+    find_package(Catch2 2.13.3 CONFIG REQUIRED)
     set_target_properties(Catch2::Catch2 PROPERTIES IMPORTED_GLOBAL TRUE)
     message(STATUS "Catch2: Found version ${Catch2_VERSION}")
 endif()
@@ -30,6 +30,11 @@ set_target_properties(CatchMain PROPERTIES
 )
 
 target_compile_definitions(CatchMain PUBLIC "CATCH_CONFIG_FAST_COMPILE")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "PGI")
+    # Workaround for STL atomic issue: https://forums.developer.nvidia.com/t/support-for-atomic-in-libstdc-missing/135403/2
+    # still appears in NVHPC 20.7
+    target_compile_definitions(CatchMain PUBLIC "__GCC_ATOMIC_TEST_AND_SET_TRUEVAL=1")
+endif()
 if(MSVC)
     target_compile_definitions(CatchMain PUBLIC "CATCH_CONFIG_WINDOWS_CRTDBG")
     target_compile_options(CatchMain PUBLIC "/bigobj")

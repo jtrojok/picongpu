@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Axel Huebl, Heiko Burau, Rene Widera,
+/* Copyright 2013-2021 Axel Huebl, Heiko Burau, Rene Widera,
  *                     Sergei Bastrakov
  *
  * This file is part of PIConGPU.
@@ -21,72 +21,17 @@
 #pragma once
 
 #include "picongpu/fields/MaxwellSolver/Yee/Yee.def"
-#include "picongpu/fields/currentInterpolation/CurrentInterpolation.def"
 
 
 namespace picongpu
 {
-namespace fields
-{
-namespace maxwellSolver
-{
-
-    template<
-        typename T_CurrentInterpolation = currentInterpolation::None,
-        typename T_CurlE = yee::CurlRight,
-        typename T_CurlB = yee::CurlLeft
-    >
-    class YeePML;
-
-} // namespace maxwellSolver
-} // namespace fields
-
-namespace traits
-{
-
-    template<
-        typename T_CurrentInterpolation,
-        typename T_CurlE,
-        typename T_CurlB
-    >
-    struct GetMargin<
-        picongpu::fields::maxwellSolver::YeePML<
-            T_CurrentInterpolation,
-            T_CurlE,
-            T_CurlB
-        >, FIELD_B
-    > : public GetMargin<
-        picongpu::fields::maxwellSolver::Yee<
-            T_CurrentInterpolation,
-            T_CurlE,
-            T_CurlB
-        >,
-        FIELD_B
-    >
+    namespace fields
     {
-    };
+        namespace maxwellSolver
+        {
+            template<typename T_CurlE = yee::CurlRight, typename T_CurlB = yee::CurlLeft>
+            class YeePML;
 
-    template<
-        typename T_CurrentInterpolation,
-        typename T_CurlE,
-        typename T_CurlB
-    >
-    struct GetMargin<
-        picongpu::fields::maxwellSolver::YeePML<
-            T_CurrentInterpolation,
-            T_CurlE,
-            T_CurlB
-        >, FIELD_E
-    > : public GetMargin<
-        picongpu::fields::maxwellSolver::Yee<
-            T_CurrentInterpolation,
-            T_CurlE,
-            T_CurlB
-        >,
-        FIELD_E
-    >
-    {
-    };
-
-} //namespace traits
+        } // namespace maxwellSolver
+    } // namespace fields
 } // namespace picongpu

@@ -1,4 +1,4 @@
-/* Copyright 2014-2020 Felix Schmitt
+/* Copyright 2014-2021 Felix Schmitt
  *
  * This file is part of PIConGPU.
  *
@@ -42,7 +42,6 @@ namespace picongpu
 
         virtual ~ILightweightPlugin()
         {
-
         }
     };
-} //namespace picongpu
+} // namespace picongpu

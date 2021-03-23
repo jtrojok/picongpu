@@ -1,4 +1,4 @@
-/* Copyright 2015-2020 Heiko Burau
+/* Copyright 2015-2021 Heiko Burau
  *
  * This file is part of PMacc.
  *
@@ -28,33 +28,30 @@
 
 namespace pmacc
 {
-namespace particles
-{
-namespace traits
-{
-
-/** Return a new sequence of particle species carrying flag.
- *
- * @tparam T_MPLSeq sequence of particle species
- * @tparam T_Flag flag to be filtered
- */
-template<typename T_MPLSeq, typename T_Flag>
-struct FilterByFlag
-{
-    typedef T_MPLSeq MPLSeq;
-    typedef T_Flag Flag;
-
-    template<typename T_Species>
-    struct HasFlag
+    namespace particles
     {
-        typedef typename ::pmacc::traits::HasFlag<
-            typename T_Species::FrameType,
-            Flag>::type type;
-    };
+        namespace traits
+        {
+            /** Return a new sequence of particle species carrying flag.
+             *
+             * @tparam T_MPLSeq sequence of particle species
+             * @tparam T_Flag flag to be filtered
+             */
+            template<typename T_MPLSeq, typename T_Flag>
+            struct FilterByFlag
+            {
+                typedef T_MPLSeq MPLSeq;
+                typedef T_Flag Flag;
 
-    typedef typename bmpl::copy_if<MPLSeq, HasFlag<bmpl::_> >::type type;
-};
+                template<typename T_Species>
+                struct HasFlag
+                {
+                    typedef typename ::pmacc::traits::HasFlag<typename T_Species::FrameType, Flag>::type type;
+                };
 
-}//namespace traits
-}//namespace particles
-}//namespace pmacc
+                typedef typename bmpl::copy_if<MPLSeq, HasFlag<bmpl::_>>::type type;
+            };
+
+        } // namespace traits
+    } // namespace particles
+} // namespace pmacc

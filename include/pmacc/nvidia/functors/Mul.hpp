@@ -1,4 +1,4 @@
-/* Copyright 2014-2020 Axel Huebl
+/* Copyright 2014-2021 Axel Huebl
  *
  * This file is part of PMacc.
  *
@@ -26,38 +26,36 @@
 
 namespace pmacc
 {
-namespace nvidia
-{
-namespace functors
-{
-    struct Mul
+    namespace nvidia
     {
-        template<typename Dst, typename Src>
-        HDINLINE void
-        operator()( Dst& dst, const Src& src ) const
+        namespace functors
         {
-            dst *= src;
-        }
+            struct Mul
+            {
+                template<typename Dst, typename Src>
+                HDINLINE void operator()(Dst& dst, const Src& src) const
+                {
+                    dst *= src;
+                }
 
-        template<typename Dst, typename Src, typename T_Acc>
-        HDINLINE void
-        operator()( const T_Acc &, Dst& dst, const Src& src ) const
-        {
-            dst *= src;
-        }
-    };
-} // namespace functors
-} // namespace nvidia
+                template<typename Dst, typename Src, typename T_Acc>
+                HDINLINE void operator()(const T_Acc&, Dst& dst, const Src& src) const
+                {
+                    dst *= src;
+                }
+            };
+        } // namespace functors
+    } // namespace nvidia
 } // namespace pmacc
 
 namespace pmacc
 {
-namespace mpi
-{
-    template<>
-    HINLINE MPI_Op getMPI_Op<pmacc::nvidia::functors::Mul>()
+    namespace mpi
     {
-        return MPI_PROD;
-    }
-} // namespace mpi
+        template<>
+        HINLINE MPI_Op getMPI_Op<pmacc::nvidia::functors::Mul>()
+        {
+            return MPI_PROD;
+        }
+    } // namespace mpi
 } // namespace pmacc

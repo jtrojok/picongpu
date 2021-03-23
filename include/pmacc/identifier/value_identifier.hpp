@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Rene Widera
+/* Copyright 2013-2021 Rene Widera
  *
  * This file is part of PMacc.
  *
@@ -45,15 +45,8 @@
  * to create a instance of this value_identifier you can use:
  *      `length()` or `length_`
  */
-#define value_identifier(in_type,name,in_default)                              \
-        identifier(name,                                                       \
-        typedef in_type type;                                                  \
-        static HDINLINE type getValue()                                        \
-        {                                                                      \
-                return in_default;                                             \
-        }                                                                      \
-        static std::string getName()                                           \
-        {                                                                      \
-                return std::string(#name);                                     \
-        }                                                                      \
-    )
+#define value_identifier(in_type, name, in_default)                                                                   \
+    identifier(                                                                                                       \
+        name, typedef in_type type; static HDINLINE type getValue() {                                                 \
+            return in_default;                                                                                        \
+        } static std::string getName() { return std::string(#name); })

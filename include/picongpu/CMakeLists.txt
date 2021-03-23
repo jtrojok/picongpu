@@ -1,4 +1,4 @@
-# Copyright 2013-2020 Axel Huebl, Benjamin Schneider, Felix Schmitt, Heiko Burau,
+# Copyright 2013-2021 Axel Huebl, Benjamin Schneider, Felix Schmitt, Heiko Burau,
 #                     Rene Widera, Alexander Grund, Alexander Matthes,
 #                     Franz Poeschel, Richard Pausch
 #
@@ -271,12 +271,41 @@ endif()
 ################################################################################
 
 # find openPMD installation
-find_package(openPMD 0.11.0 CONFIG COMPONENTS MPI)
+find_package(openPMD 0.12.0 CONFIG COMPONENTS MPI)
 
 if(openPMD_FOUND)
-    message(STATUS "Found openPMD: ${openPMD_DIR}")
-    add_definitions(-DENABLE_OPENPMD=1)
-    set(LIBS ${LIBS} openPMD::openPMD)
+    if(openPMD_HAVE_ADIOS2 OR openPMD_HAVE_HDF5)
+        message(STATUS "Found openPMD: ${openPMD_DIR}")
+        add_definitions(-DENABLE_OPENPMD=1)
+
+        # non of these should appear in cmake-gui, so make them internal
+        set(JSON_BuildTests OFF CACHE INTERNAL "")
+        set(JSON_MultipleHeaders OFF CACHE INTERNAL "")
+        set(JSON_ImplicitConversions OFF CACHE INTERNAL "")
+        set(JSON_Install OFF CACHE INTERNAL "")  # only used PRIVATE
+
+        # allow to use externally installed nlohmann_json
+        set(
+            PIC_nlohmann_json_PROVIDER "intern" CACHE
+            STRING "Use internally shipped or external nlohmann_json library.")
+        set_property(
+            CACHE PIC_nlohmann_json_PROVIDER
+            PROPERTY STRINGS "intern;extern")
+        mark_as_advanced(PIC_nlohmann_json_PROVIDER)
+        if(${PIC_nlohmann_json_PROVIDER} STREQUAL "intern")
+            add_subdirectory(
+                "${PIConGPUapp_SOURCE_DIR}/../../thirdParty/nlohmann_json"
+                "${CMAKE_CURRENT_BINARY_DIR}/build_nlohmann_json")
+        else()
+            find_package(nlohmann_json 3.9.1 CONFIG REQUIRED)
+            message(STATUS "nlohmann-json: Found version '${nlohmann_json_VERSION}'")
+        endif()
+        set(LIBS ${LIBS} openPMD::openPMD)
+    else()
+        message(STATUS "Found openPMD at ${openPMD_DIR}, but PIConGPU requires"
+                       " availability of either its ADIOS2 or HDF5 backend - "
+                       "NOT BUILDING the openPMD plugin")
+    endif()
 else(openPMD_FOUND)
     message(STATUS "Could NOT find openPMD - set openPMD_DIR or check your CMAKE_PREFIX_PATH")
 endif(openPMD_FOUND)
@@ -373,6 +402,21 @@ else(ISAAC_FOUND)
 endif(ISAAC_FOUND)
 
 ################################################################################
+# PIConGPU Workarounds
+################################################################################
+
+set(PIC_COMPUTE_CURRENT_THREAD_LIMITER_DEFAULT OFF)
+if(ALPAKA_ACC_GPU_HIP_ENABLE)
+    set(PIC_COMPUTE_CURRENT_THREAD_LIMITER_DEFAULT ON)
+endif()
+option(PIC_COMPUTE_CURRENT_THREAD_LIMITER "Compute current results with HIP alpaka backend are wrong when more threads than particles in a frame will be used (possible compiler BUG).\
+ ON means the number of threads will be limited to number of particles in a frame." ${PIC_COMPUTE_CURRENT_THREAD_LIMITER_DEFAULT})
+
+if(PIC_COMPUTE_CURRENT_THREAD_LIMITER)
+    add_definitions(-DPIC_COMPUTE_CURRENT_THREAD_LIMITER=1)
+endif()
+
+################################################################################
 # Check if PIC_EXTENSION_PATH is relative or absolute
 ################################################################################
 
@@ -419,6 +463,16 @@ cupla_add_executable(picongpu
 )
 
 target_link_libraries(picongpu PUBLIC ${LIBS} picongpu-hostonly)
+
+if(openPMD_FOUND)
+    # Including <nlohmann/json.hpp> will throw loads of warnings. Quiet them.
+    # (Doesn't work for nvcc??)
+    target_include_directories(
+        picongpu-hostonly
+        SYSTEM PRIVATE
+        $<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_INCLUDE_DIRECTORIES>)
+    target_link_libraries(picongpu-hostonly PRIVATE nlohmann_json::nlohmann_json)
+endif()
 
 
 ################################################################################

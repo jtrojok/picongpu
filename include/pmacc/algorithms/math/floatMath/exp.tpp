@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Heiko Burau, Rene Widera, Richard Pausch
+/* Copyright 2013-2021 Heiko Burau, Rene Widera, Richard Pausch
  *
  * This file is part of PMacc.
  *
@@ -28,23 +28,22 @@
 
 namespace pmacc
 {
-namespace math
-{
-
-    template<>
-    struct Log10<float>
+    namespace math
     {
-        typedef float result;
-
-        HDINLINE float operator( )(const float& value)
+        template<>
+        struct Log10<float>
         {
-#if __CUDA_ARCH__
-            return ::log10f( value );
-#else
-            return ::log10( value );
-#endif
-        }
-    };
+            typedef float result;
 
-} //namespace math
+            HDINLINE float operator()(const float& value)
+            {
+#if(CUPLA_DEVICE_COMPILE == 1) // we are on gpu
+                return ::log10f(value);
+#else
+                return ::log10(value);
+#endif
+            }
+        };
+
+    } // namespace math
 } // namespace pmacc

@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Axel Huebl
+/* Copyright 2013-2021 Axel Huebl
  *
  * This file is part of PIConGPU.
  *
@@ -23,19 +23,18 @@
 
 namespace picongpu
 {
+    namespace traits
+    {
+        /** Convert a Splash CollectionType to a PIConGPU Type
+         *
+         * \tparam T_SplashType Splash CollectionType
+         * \return \p ::type as public typedef
+         */
+        template<typename T_SplashType>
+        struct SplashToPIC;
 
-namespace traits
-{
-    /** Convert a Splash CollectionType to a PIConGPU Type
-     *
-     * \tparam T_SplashType Splash CollectionType
-     * \return \p ::type as public typedef
-     */
-    template<typename T_SplashType>
-    struct SplashToPIC;
+    } // namespace traits
 
-} //namespace traits
-
-}// namespace picongpu
+} // namespace picongpu
 
 #include "SplashToPIC.tpp"

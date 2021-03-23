@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Rene Widera
+/* Copyright 2013-2021 Rene Widera
  *
  * This file is part of PMacc.
  *
@@ -29,15 +29,14 @@
 
 namespace pmacc
 {
+    /** cast type to boost mpl vector
+     * @return ::type if T_Type is sequence then identity of T_Type
+     *                else boost::mpl::vector<T_Type>
+     */
+    template<typename T_Type>
+    struct ToSeq
+    {
+        typedef typename bmpl::if_<bmpl::is_sequence<T_Type>, T_Type, bmpl::vector1<T_Type>>::type type;
+    };
 
-/** cast type to boost mpl vector
- * @return ::type if T_Type is sequence then identity of T_Type
- *                else boost::mpl::vector<T_Type>
- */
-template<typename T_Type>
-struct ToSeq
-{
-    typedef typename bmpl::if_<bmpl::is_sequence< T_Type >,T_Type,bmpl::vector1<T_Type> >::type type;
-};
-
-}//namespace pmacc
+} // namespace pmacc

@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Axel Huebl, Heiko Burau, Rene Widera, Remi Lehe,
+/* Copyright 2013-2021 Axel Huebl, Heiko Burau, Rene Widera, Remi Lehe,
  *                     Sergei Bastrakov
  *
  * This file is part of PIConGPU.
@@ -29,32 +29,19 @@
 
 namespace pmacc
 {
-namespace traits
-{
-
-    template<
-        typename T_CurrentInterpolation,
-        uint32_t T_cherenkovFreeDir
-    >
-    struct StringProperties<
-        ::picongpu::fields::maxwellSolver::LehePML<
-            T_CurrentInterpolation,
-            T_cherenkovFreeDir
-        >
-    >
+    namespace traits
     {
-        static StringProperty get()
+        template<uint32_t T_cherenkovFreeDir>
+        struct StringProperties<::picongpu::fields::maxwellSolver::LehePML<T_cherenkovFreeDir>>
         {
-            auto propList =
-                ::picongpu::fields::maxwellSolver::LehePML<
-                    T_CurrentInterpolation,
-                    T_cherenkovFreeDir
-                >::getStringProperties();
-            // overwrite the name of the YeePML solver (inherit all other properties)
-            propList["name"].value = "LehePML";
-            return propList;
-        }
-    };
+            static StringProperty get()
+            {
+                auto propList = ::picongpu::fields::maxwellSolver::LehePML<T_cherenkovFreeDir>::getStringProperties();
+                // overwrite the name of the solver (inherit all other properties)
+                propList["name"].value = "Lehe";
+                return propList;
+            }
+        };
 
-} // namespace traits
+    } // namespace traits
 } // namespace pmacc

@@ -1,5 +1,5 @@
 .base_gcc:
-  image: registry.gitlab.com/hzdr/crp/alpaka-group-container/alpaka-ci:gcc
+  image: registry.gitlab.com/hzdr/crp/alpaka-group-container/alpaka-ci-gcc:1.1
   variables:
     GIT_SUBMODULE_STRATEGY: normal
     ALPAKA_ACCS: "ALPAKA_ACC_CPU_B_SEQ_T_SEQ_ENABLE
@@ -13,7 +13,7 @@
     - x86_64
 
 .base_clang:
-  image: registry.gitlab.com/hzdr/crp/alpaka-group-container/alpaka-ci:clang
+  image: registry.gitlab.com/hzdr/crp/alpaka-group-container/alpaka-ci-clang:1.1
   variables:
     GIT_SUBMODULE_STRATEGY: normal
     ALPAKA_ACCS: "ALPAKA_ACC_CPU_B_SEQ_T_SEQ_ENABLE
@@ -53,3 +53,21 @@
   tags:
     - cuda
     - intel
+
+.base_hip:
+  variables:
+    GIT_SUBMODULE_STRATEGY: normal
+    CUPLA_CXX: "hipcc"
+    ALPAKA_ACCS: "ALPAKA_ACC_GPU_HIP_ENABLE"
+    # architecture of the Vega 64
+    CUPLA_CMAKE_ARGS: "-DALPAKA_HIP_ARCH=900"
+  before_script:
+    - rocm-smi
+    - hipcc --version
+  script:
+    # use Vega 64 of the CI node
+    - export HIP_VISIBLE_DEVICES=2
+    - source script/run_test.sh
+  tags:
+    - amd
+    - rocm

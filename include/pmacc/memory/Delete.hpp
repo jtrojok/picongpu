@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Felix Schmitt, Heiko Burau, Rene Widera,
+/* Copyright 2013-2021 Felix Schmitt, Heiko Burau, Rene Widera,
  *                     Wolfgang Hoenig, Benjamin Worpitz,
  *                     Alexander Grund
  *
@@ -24,5 +24,15 @@
 #pragma once
 
 
-#define __delete( var ) if( ( var ) ) { delete( var ); ( var ) = nullptr; }
-#define __deleteArray( var ) if( ( var ) ) { delete[ ]( var ); ( var ) = nullptr; }
+#define __delete(var)                                                                                                 \
+    if((var))                                                                                                         \
+    {                                                                                                                 \
+        delete(var);                                                                                                  \
+        (var) = nullptr;                                                                                              \
+    }
+#define __deleteArray(var)                                                                                            \
+    if((var))                                                                                                         \
+    {                                                                                                                 \
+        delete[](var);                                                                                                \
+        (var) = nullptr;                                                                                              \
+    }

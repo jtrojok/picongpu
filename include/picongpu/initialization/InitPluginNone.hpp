@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Rene Widera
+/* Copyright 2013-2021 Rene Widera
  *
  * This file is part of PIConGPU.
  *
@@ -18,11 +18,9 @@
  */
 
 
-
 #pragma once
 
 #include "picongpu/initialization/IInitPlugin.hpp"
-
 
 
 namespace picongpu
@@ -32,7 +30,6 @@ namespace picongpu
     class InitPluginNone : public IInitPlugin
     {
     public:
-
         virtual void slide(uint32_t currentStep)
         {
         }
@@ -62,12 +59,11 @@ namespace picongpu
             return "InitPluginNone";
         }
 
-        virtual void setMappingDescription(MappingDesc *cellDescription)
+        virtual void setMappingDescription(MappingDesc* cellDescription)
         {
         }
 
     protected:
-
         virtual void pluginLoad()
         {
         }
@@ -77,5 +73,4 @@ namespace picongpu
         }
     };
 
-}
-
+} // namespace picongpu

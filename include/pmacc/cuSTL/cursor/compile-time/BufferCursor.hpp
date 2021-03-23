@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Heiko Burau, Rene Widera
+/* Copyright 2013-2021 Heiko Burau, Rene Widera
  *
  * This file is part of PMacc.
  *
@@ -28,39 +28,40 @@
 
 namespace pmacc
 {
-namespace cursor
-{
-namespace CT
-{
+    namespace cursor
+    {
+        namespace CT
+        {
+            /** Compile-time version of cursor::BufferCursor where pitch is a compile-time vector
+             */
+            template<typename Type, typename Pitch>
+            struct BufferCursor : public Cursor<PointerAccessor<Type>, CT::BufferNavigator<Pitch>, Type*>
+            {
+                HDINLINE BufferCursor(Type* pointer)
+                    : Cursor<PointerAccessor<Type>, CT::BufferNavigator<Pitch>, Type*>(
+                        PointerAccessor<Type>(),
+                        CT::BufferNavigator<Pitch>(),
+                        pointer)
+                {
+                }
 
-/** Compile-time version of cursor::BufferCursor where pitch is a compile-time vector
- */
-template<typename Type, typename Pitch>
-struct BufferCursor : public Cursor<PointerAccessor<Type>,
-                                   CT::BufferNavigator<Pitch>, Type*>
-{
-    HDINLINE BufferCursor(Type* pointer)
-        : Cursor<PointerAccessor<Type>, CT::BufferNavigator<Pitch>, Type*>
-            (PointerAccessor<Type>(), CT::BufferNavigator<Pitch>(), pointer) {}
+                HDINLINE BufferCursor(const Cursor<PointerAccessor<Type>, CT::BufferNavigator<Pitch>, Type*>& cur)
+                    : Cursor<PointerAccessor<Type>, CT::BufferNavigator<Pitch>, Type*>(cur)
+                {
+                }
+            };
 
-    HDINLINE BufferCursor(const Cursor<PointerAccessor<Type>,
-                                   CT::BufferNavigator<Pitch>, Type*>& cur)
-        : Cursor<PointerAccessor<Type>, CT::BufferNavigator<Pitch>, Type*>(cur) {}
-};
+        } // namespace CT
 
-} // CT
+        namespace traits
+        {
+            template<typename Type, typename Pitch>
+            struct dim<CT::BufferCursor<Type, Pitch>>
+            {
+                const static int value = Pitch::dim + 1;
+            };
 
-namespace traits
-{
+        } // namespace traits
 
-template<typename Type, typename Pitch>
-struct dim<CT::BufferCursor<Type, Pitch> >
-{
-    const static int value = Pitch::dim + 1;
-};
-
-} // traits
-
-} // cursor
-} // pmacc
-
+    } // namespace cursor
+} // namespace pmacc

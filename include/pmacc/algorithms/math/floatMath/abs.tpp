@@ -1,4 +1,4 @@
-/* Copyright 2013-2020 Heiko Burau, Rene Widera, Richard Pausch
+/* Copyright 2013-2021 Heiko Burau, Rene Widera, Richard Pausch
  *
  * This file is part of PMacc.
  *
@@ -27,19 +27,18 @@
 
 namespace pmacc
 {
-namespace math
-{
-
-template<>
-struct Abs2<float>
-{
-    typedef float result;
-
-    HDINLINE float operator( )(const float& value )
+    namespace math
     {
-        return value*value;
-    }
-};
+        template<>
+        struct Abs2<float>
+        {
+            typedef float result;
 
-} //namespace math
+            HDINLINE float operator()(const float& value)
+            {
+                return value * value;
+            }
+        };
+
+    } // namespace math
 } // namespace pmacc
